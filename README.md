@@ -33,13 +33,13 @@ This makes PIXEL a **scalable and flexible solution** for large constellations i
 - Evaluates the metric for *all* constellation points.  
 - High accuracy, but complexity grows linearly with constellation size.
 
-### 2. **Fast Square Detection (Algorithm 1)**  
+### 2. **Fast PIXEL Detection for N=1**  
 - Divides the complex plane into **K×K grid cells**.  
 - Each cell is preassigned to its closest constellation point.  
 - Each received symbol is detected by locating its cell → **O(1) complexity**.  
 - Extremely fast, but approximation errors can appear.
 
-### 3. **Super Square PIXEL Detection (Algorithm 2)**  
+### 3. **PIXEL Detection**  
 - Each cell stores the **N nearest constellation points** (instead of only 1).  
 - At runtime:
   1. Received symbol is mapped to its cell.  
@@ -76,7 +76,7 @@ To run a simulation:
 main_simulation
 ```
 
-This evaluates **GAP-D**, **Fast Square**, and **PIXEL** detection under AWGN + phase noise.  
+This evaluates **GAP-D**, **Fast PIXEL**, and **PIXEL** detection under AWGN + phase noise.  
 Results (SER and runtimes) are saved into `results/`.
 
 You can modify:
@@ -110,44 +110,33 @@ To reproduce results from the PIXEL paper:
 
 ---
 
-## Example Results
-
-### Constellation partitioned into PIXEL grid
-*(example for QAM-256, K=128)*  
-
-![PIXEL Grid Example](figures/grid_example.png)
-
-### SEP vs SNR
-Comparison of GAP-D, Fast Square, and PIXEL detection.  
-
-![SEP vs SNR](figures/sep_results.png)
-
-### Runtime Benchmark
-Measured at SNR = 30 dB, QAM-256:
-
-| Algorithm      | SEP       | Runtime (s) |
-|----------------|-----------|-------------|
-| GAP-D          | 1.23e-04  | 2.35        |
-| Fast Square    | 1.30e-04  | 0.15        |
-| PIXEL (N=2)    | 1.24e-04  | 0.72        |
-
----
-
 ## Repository Structure
 
 ```
 PIXEL-Detection/
 │
-├── main_simulation.m         # Main script (runs all algorithms)
-├── functions/                # Helper functions
-│   ├── GAP_D.m               # GAP-D baseline
-│   ├── Pixel_detection.m     # Super Square PIXEL (Algorithm 2)
-│   ├── Pixel_detection_N_1.m # Fast Square (Algorithm 1)
-│   ├── preprocessing_*.m     # Grid preprocessing routines
-│   └── utils/                # Other utilities
+├── main_simulation.m             # Main script (runs all algorithms)
+├── README.md                     # Documentation and usage
 │
-├── results/                  # Output .mat results
-└── figures/                  # Example plots for README
+├── detection/                    # Detection algorithms
+│   ├── GAP_D.m                   # GAP-D baseline (single symbol)
+│   ├── GAP_D_array.m             # GAP-D for multiple symbols
+│   ├── Pixel_detection.m         # PIXEL
+│   └── Pixel_detection_N_1.m     # Fast PIXEL(N=1)
+│
+├── modulation/                   # Constellation generation
+│   ├── apsk_hex.m                # Super APSK constellation
+│   └── GAM.m                     # Golden Angle Modulation
+│
+├── preprocessing/                # Grid preprocessing utilities
+│   ├── GAP_D_search_space.m      # Generate search space with GAP-D
+│   ├── preprocessing_search_space.m      # Build PIXEL search grid (multi-candidate)
+│   └── preprocessing_search_space_N_1.m  # Build search grid for Fast PIXEL(single candidate)
+│
+└── utils/                        # Utility functions
+    └── add_phase_noise.m         # Adds Gaussian phase noise to signals
+
+
 ```
 
 ---
@@ -187,5 +176,6 @@ See [LICENSE](LICENSE) for details.
 
 Maintainer: **Anastasios Karakoulakis**  
 Email: *tkarakoulakis@gmail.com*  
+
 
 
